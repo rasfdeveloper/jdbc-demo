@@ -74,7 +74,6 @@ public class SellerDaoJDBC implements SellerDAO {
     @Override
     public void update(Seller obj) {
         PreparedStatement st = null;
-        ResultSet rs = null;
         try {
             st = conn.prepareStatement(
                         "UPDATE seller " +
@@ -89,7 +88,12 @@ public class SellerDaoJDBC implements SellerDAO {
             st.setInt(6, obj.getId());
 
             int rowsAffected = st.executeUpdate();
-            System.out.println(rowsAffected);
+
+            if(rowsAffected == 0){
+                throw new DbException("Seller does not exists");
+            }
+
+            System.out.println("Success");
 
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
@@ -100,7 +104,17 @@ public class SellerDaoJDBC implements SellerDAO {
 
     @Override
     public void deleteById(Integer id) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement("DELETE FROM seller WHERE id = ?");
 
+            st.setInt(1, id);
+
+            st.executeUpdate();
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
